@@ -1,0 +1,79 @@
+---
+- name: Create directories for Machine-Learning-User (Google Coral)
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ default_user.ml_user }}"
+    mode: '0775'
+  become: yes
+  with_items:
+    - '/home/{{ default_user.ml_user }}/script/ml/coral'
+
+- name: Register Keys for Google Coral
+  apt_key:
+    url: "{{ item }}"
+    state: present
+  become: yes
+  with_items:
+    - https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  when: 
+    - ansible_distribution == "Debian"
+
+- name: Add repository for Google Coral
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  become: yes
+  with_items:
+    - deb https://packages.cloud.google.com/apt coral-edgetpu-stable main
+  when: 
+    - ansible_distribution == "Debian"
+
+- name: Remove Google Coral Packages (std-version)
+  apt:
+    name: [ 'libedgetpu1-max' ]
+    state: absent
+    update_cache: no
+  become: yes
+  when:
+    - libedgetpu1_version == 'std'
+
+- name: Install Google Coral Packages (std-version)
+  apt:
+    name: [ 'libedgetpu1-std' ]
+    state: present
+    update_cache: no
+  become: yes
+  when:
+    - libedgetpu1_version == 'std'
+
+- name: Remove Google Coral Packages  (max-version)
+  apt:
+    name: [ 'libedgetpu1-std' ]
+    state: absent
+    update_cache: no
+  become: yes
+  when:
+    - libedgetpu1_version == 'max'
+
+- name: Install Google Coral Packages  (max-version)
+  apt:
+    name: [ 'libedgetpu1-max' ]
+    state: present
+    update_cache: no
+  become: yes
+  when:
+    - libedgetpu1_version == 'max'
+
+- name: Install tensorflow_lite via pip3
+  pip:
+    name: https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl
+    executable: /usr/bin/pip3
+  become: yes
+
+- name: Set up GIT-Repository for Google Coral
+  git:
+    repo: 'https://github.com/google-coral/tflite.git'
+    dest: /home/{{ default_user.ml_user }}/script/ml/coral
+    update: no
+  become_user: "{{ default_user.ml_user }}"

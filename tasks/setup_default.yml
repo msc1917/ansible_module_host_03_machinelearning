@@ -1,0 +1,20 @@
+---
+- name: Create directories for Machine-Learning-User (default-structure)
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ default_user.ml_user }}"
+    mode: '0775'
+  become: yes
+  with_items:
+   - "/home/{{ default_user.ml_user }}/script"
+   - "/home/{{ default_user.ml_user }}/log"
+   - "/home/{{ default_user.ml_user }}/data"
+   - "/home/{{ default_user.ml_user }}/script/ml"
+
+- name: Install Python
+  apt:
+    name: [ 'python', 'python3', 'python-pip', 'python3-pip' ]
+    state: present
+    update_cache: no
+  become: yes

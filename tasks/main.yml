@@ -1,0 +1,30 @@
+---
+- name: Check for development-user
+  getent: 
+    database: passwd 
+    key: "{{ default_user.ml_user }}"
+  register: ml_user_exists
+
+- name: Set up system for Machine Learning
+  include_tasks: setup_default.yml
+  when: 
+    - not ml_user_exists.failed
+    - ("coral" in ml_engines) or ("ncs" in ml_engines) or ("jetpack" in ml_engines)
+
+- name: Set up system for Google Coral
+  include_tasks: setup_coral.yml
+  when: 
+    - not ml_user_exists.failed
+    - ("coral" in ml_engines)
+
+- name: Set up system for Intel Neural Compute Stick
+  include_tasks: setup_ncs.yml
+  when: 
+    - not ml_user_exists.failed
+    - ("ncs" in ml_engines)
+
+- name: Set up system for nVidia Jetpack
+  include_tasks: setup_jetpack.yml
+  when: 
+    - not ml_user_exists.failed
+    - ("jetpack" in ml_engines)
