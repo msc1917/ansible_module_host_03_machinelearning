@@ -3,4 +3,3 @@ libedgetpu1_version: std
 
 do_mount_filesystems: true
 do_software_upgrade: true
-do_ansible: false
