@@ -33,7 +33,8 @@
   apt:
     name: [ 'libedgetpu1-max' ]
     state: absent
-    update_cache: no
+    update_cache:     "{{ apt_proxy.update_repo | default(no) }}"
+    cache_valid_time: "{{ apt_proxy.update_cache | default(0) }}"
   become: yes
   when:
     - libedgetpu1_version == 'std'
@@ -42,7 +43,8 @@
   apt:
     name: [ 'libedgetpu1-std' ]
     state: present
-    update_cache: no
+    update_cache:     "{{ apt_proxy.update_repo | default(no) }}"
+    cache_valid_time: "{{ apt_proxy.update_cache | default(0) }}"
   become: yes
   when:
     - libedgetpu1_version == 'std'
@@ -51,7 +53,8 @@
   apt:
     name: [ 'libedgetpu1-std' ]
     state: absent
-    update_cache: no
+    update_cache:     "{{ apt_proxy.update_repo | default(no) }}"
+    cache_valid_time: "{{ apt_proxy.update_cache | default(0) }}"
   become: yes
   when:
     - libedgetpu1_version == 'max'
@@ -60,7 +63,8 @@
   apt:
     name: [ 'libedgetpu1-max' ]
     state: present
-    update_cache: no
+    update_cache:     "{{ apt_proxy.update_repo | default(no) }}"
+    cache_valid_time: "{{ apt_proxy.update_cache | default(0) }}"
   become: yes
   when:
     - libedgetpu1_version == 'max'
